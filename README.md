@@ -25,7 +25,13 @@ string[] lines = text.Split('\n');
 
 mot `File.ReadAllLines(path)`, som klarar både `\n` och `\r\n`, så inget `\r` blir kvar.
 
-3. Tredje
+3. 
+***Vad hände:*** Totalsumman stämmer inte. Den visar 121 kr isället för 136 kr (15+32+89), mjölken räknades inte med.
+
+***Varför:*** Loopen i `Total()` hoppar över första varan. Listans första element har index 0, men loopen startade på `i = 1`, så `items[0]` kom aldrig med i summan. 
+
+***Lösning:*** Lösningen är bara att byta ut `i = 1` till `i = 0`
+
 4. Fjärde
 5. Femte
 6. Sjätte
