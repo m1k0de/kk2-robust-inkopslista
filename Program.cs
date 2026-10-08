@@ -33,7 +33,18 @@ while (true)
             continue;
         }
 
-        list.Add(new Item(name, price));
+        try
+        {
+            list.Add(new Item(name, price));
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            Console.WriteLine("Saker kostar mer än så... Priset får inte vara negativt.");
+        }
+        catch (ArgumentException)
+        {
+            Console.WriteLine("Namnet får inte vara tomt. Varan läggs inte till.");
+        }
     }
     else if (choice == 2)
     {
