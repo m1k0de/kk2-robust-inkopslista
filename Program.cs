@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 ShoppingList list = new ShoppingList("items.txt");
 list.Load();
 
@@ -13,20 +15,36 @@ while (true)
     Console.WriteLine("5. Avsluta");
     Console.Write("Välj: ");
 
-    int choice = int.Parse(Console.ReadLine());
+    if (!int.TryParse(Console.ReadLine(), out int choice))
+    {
+        Console.WriteLine("Skriv en siffra mellan 1-5");
+        continue;
+    }
 
     if (choice == 1)
     {
         Console.Write("Namn: ");
         string name = Console.ReadLine();
         Console.Write("Pris: ");
-        int price = int.Parse(Console.ReadLine());
+        
+        if (!int.TryParse(Console.ReadLine(), out int price))
+        {
+            Console.WriteLine("Priset måste vara ett heltal.");
+            continue;
+        }
+
         list.Add(new Item(name, price));
     }
     else if (choice == 2)
     {
         Console.Write("Nummer: ");
-        int number = int.Parse(Console.ReadLine());
+
+        if (!int.TryParse(Console.ReadLine(), out int number))
+        {
+            Console.WriteLine("Numret måste vara ett heltal.");
+            continue;
+        }
+
         list.RemoveAt(number);
     }
     else if (choice == 3)
