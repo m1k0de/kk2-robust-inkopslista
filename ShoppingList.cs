@@ -72,16 +72,20 @@ class ShoppingList
         {
             lines.Add($"{item.Price};{item.Name}");
         }
-
+        
         try
         {
             File.WriteAllText(path, string.Join("\r\n", lines) + "\r\n");
+            Console.WriteLine("Listan är sparad.");
         }
-        catch
+        catch (UnauthorizedAccessException)
         {
+            Console.WriteLine($"Kunde inte spara, saknar behörighet till {path}");
         }
-
-        Console.WriteLine("Listan är sparad.");
+        catch (IOException)
+        {
+            Console.WriteLine($"Kunde inte spara {path}");
+        }
     }
 
     // Reads the file back into the list.
@@ -107,7 +111,7 @@ class ShoppingList
             {
                 continue;
             }
-            items.Add(new Item(parts[1], int.Parse(parts[0])));
+            items.Add(new Item(parts[1], price));
         }
     }
 }
