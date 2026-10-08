@@ -13,7 +13,6 @@ Det behövs en `if` som kollar `parts.Length < 2`. En giltig rad har två delar 
 
 Efter fel 2 läser jag filen med `File.ReadAllLines`, och då blir det ingen tom sista rad längre. `if`-satsen ligger ändå kvar, eftersom den skyddar mot tomma eller trasiga rader om någon ändrar `items.txt` för hand.
 <br>
-<br>
 
 - 1.1. **Följdfel: Varunamnen syns inte**
 
@@ -33,7 +32,6 @@ string[] lines = text.Split('\n');
 
 mot `File.ReadAllLines(path)`, som klarar både `\n` och `\r\n`, så inget `\r` blir kvar.
 <br>
-<br>
 
 2. **Fel totalsumma**
 
@@ -46,7 +44,7 @@ Loopen i `Total()` hoppar över första varan. Listans första element har index
 ***Lösning:*** 
 Lösningen är att byta ut `i = 1` till `i = 0`
 <br>
-<br>
+
 
 3. **Krasch vid bokstäver istället för tal**
 
@@ -57,7 +55,8 @@ Om man skriver bokstäver där programmet vill ha ett tal (i menyn, vid priset e
 `int.Parse` försöker göra om texten till ett tal. Går det inte så kastar den ett undantag, men eftersom ingen fångar upp det så kraschar programmet.
 
 ***Lösning:*** 
-Jag bytte ut `int.Parse` mot `int.TryParse` på alla tre ställena. `TryParse` kraschar inte, utan returnerar `false` om texten inte är ett tal. Då skriver programmet ut ett felmeddelande, och `continue` visar menyn igen.  
+Jag bytte ut `int.Parse` mot `int.TryParse` på de tre ställena i Program.cs. `TryParse` kraschar inte, utan returnerar `false` om texten inte är ett tal. Då skriver programmet ut ett felmeddelande, och `continue` visar menyn igen.  
+Samma sak gällde `int.Parse i Load()`. En rad i filen som `abc;Ost` hade kraschat programmet vid start. Där använder jag också `int.TryParse`, och en rad med ogiltigt pris hoppas över med `continue`.
 <br>
 
 4. **Kraschar när man försöker ta bort en vara som inte finns**
@@ -70,9 +69,18 @@ Om man valde "Ta bort vara" och valde ett nummer som inte fanns i listan så kra
 
 **Lösning:** 
 `RemoveAt` kontrollerar nu att numret ligger mellan 1 och antalet varor. Om inte så returnerar den `false` istället för att krascha, och `true` om varan togs bort. `Program.cs` kollar svaret och skriver ut ett meddelande om numret inte fanns. Då svarar `ShoppingList` bara på om det gick, och `Program.cs` sköter kontakten med användaren. 
+<br>
 
+5. **Kraschar när items.txt saknas**
 
-5. Sjätte
+***Vad hände:*** 
+Om `items.txt` inte fanns så kraschade programmet direkt vid start med `FileNotFoundExeption`.
+
+***Varför:** 
+`File.ReadAllLines` antar att filen finns. Inget fångade undantaget, så programmet kraschade. Det händer innan någon vara har sparats och programmet körs första gången.
+
+***Lösning:*** Jag valde att lägga `File.ReadAllLines` i en `try` och fångar `fileNotFoundExeption` i en `catch`. Då skrivs ett meddelande ut och `Load()` avslutas med `return;`, så programmet startar med en tom lista. Variabeln `lines` deklareras före `try`, eftersom den annars baraa finns inuti `try`-blocket.
+
 6. 
 
 ## Designval. 
