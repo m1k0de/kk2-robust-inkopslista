@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 ShoppingList list = new ShoppingList("items.txt");
 list.Load();
 
