@@ -92,12 +92,47 @@ Jag flyttade "Listan är sparad." in i `try`, direkt efter `File.WriteAllText`. 
 Konstruktorn i `Item` kastar `ArgumentException` om namnet är tomt och `ArgumentOutOfRangeException` om priset är negativt. Då kan ett trasigt `Item` aldrig skapas. `Program.cs` fångar undantagen och skriver ut ett meddelande, så programmet fortsätter.
 
 ### Budgettaket
-…(kommer när vi har gjort det)
+Jag valde att låta `Add` returnera `false` när en vara skulle spräcka taket, i stället för att kasta ett undantag.
 
-* Hur Add säger nej när taket överskrids, och varför du valde så.
+**Varför:** 
+Att listan når budgettaket är inget fel i programmet. Det är en helt normal situation. Undantntag passar bättre för sådant som inte borde hända, t.ex. att ett `Item` skapas med negativt pris. 
+Det är en helt normal situation, ungefär som när saldot inte räcker vid ett uttag i en bank.
+
+**Vad Program.cs gör med svaret:** 
+`Program.cs` kollar svaret med `if (!list.Add(...))` och skriver ut ett meddelande om varan inte lades till. Det är samma mönster som i `RemoveAt`, som också returnerar `false` när numret inte finns. `ShoppingList` svarar bara på om det gick, och `Program.cs` pratar med användaren.
+
 
 ## Klassdiagram. 
-Ett enkelt diagram över programmet efter dina ändringar. Tre rutor räcker.
+```mermaid
+classDiagram
+    class Program {
+        Visar menyn
+        Läser inmatning
+        Fångar undantag
+    }
+    class ShoppingList {
+        -List~Item~ items
+        -string path
+        -int budget
+        +ShoppingList(string path)
+        +Add(Item item) bool
+        +RemoveAt(int number) bool
+        +Total() int
+        +Find(string name) Item
+        +Print() void
+        +Save() void
+        +Load() void
+    }
+    class Item {
+        +string Name
+        +int Price
+        +Item(string name, int price)
+        +ToString() string
+    }
+    Program --> ShoppingList : använder
+    ShoppingList "1" --> "*" Item : innehåller
+```
+
 
 
 
