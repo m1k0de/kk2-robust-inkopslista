@@ -119,7 +119,19 @@ class ShoppingList
             {
                 continue;
             }
-            items.Add(new Item(parts[1], price));
+
+            try
+            {
+                items.Add(new Item(parts[1], price));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                Console.WriteLine($"Hoppar över raden \"{line}\": priset får inte vara negativt.");
+            }
+            catch (ArgumentException)
+            {
+                Console.WriteLine($"Hoppar över raden \"{line}\": namnet får inte vara tomt.");
+            }
         }
     }
 }
