@@ -35,7 +35,10 @@ while (true)
 
         try
         {
-            list.Add(new Item(name, price));
+            if (!list.Add(new Item(name, price)))
+            {
+                Console.WriteLine("Varan spräcker budgettaket.");
+            }
         }
         catch (ArgumentOutOfRangeException)
         {
