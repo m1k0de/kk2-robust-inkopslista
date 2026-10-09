@@ -84,9 +84,16 @@ Om `items.txt` inte fanns så kraschade programmet direkt vid start med `FileNot
 `catch` i `Save()` var tom, så felet fångades och kastades bort utan att någon fick veta det. Dessutom låg "Listan är sparad." efter `try`/`catch` så den skrevs ut oavsett om det sparades eller inte. 
 
 **Lösning:**
-Jag flyttade "Listan är sparad." in i `try`, direkt efter `File.WriteAllText`. Den körs nu bara om sparandet lyckades. Den tomma `catch` ersattes med två specifika: `UnauthorizedAccessException` (saknar behörighet) och `IOException` (andra fel vid skrivning). Båda skriver ut ett meddelande om vad som gick fel.
+Jag flyttade "Listan är sparad." in i `try`, direkt efter `File.WriteAllText`. Den körs nu bara om sparandet lyckades. Den tomma `catch` ersattes med två specifika: `UnauthorizedAccessException` (saknar behörighet) och `IOException` (andra fel vid skrivning). Båda skriver ut ett meddelande om vad som            gick fel.
 
 ## Designval. 
+
+### Item vägrar ogiltiga värden
+Konstruktorn i `Item` kastar `ArgumentException` om namnet är tomt och `ArgumentOutOfRangeException` om priset är negativt. Då kan ett trasigt `Item` aldrig skapas. `Program.cs` fångar undantagen och skriver ut ett meddelande, så programmet fortsätter.
+
+### Budgettaket
+…(kommer när vi har gjort det)
+
 * Hur Add säger nej när taket överskrids, och varför du valde så.
 
 ## Klassdiagram. 
