@@ -1,4 +1,4 @@
-## Felrapport. 
+## Felrapport
 
 1. **Krasch vid start**
 
@@ -16,7 +16,7 @@ Efter fel 1.1 läser jag filen med `File.ReadAllLines`, och då blir det ingen t
 - 1.1. **Följdfel: Varunamnen syns inte**
 
 **Vad hände:**
-Samma orsak som fel 1, alltså `Split('\n')`, gav också ett andra problem: Programmet startar men produkterna skrivs inte ut, endast priset.
+Samma orsak som fel 1, alltså `Split('\n')`, gav också ett andra problem: programmet startar men produkterna skrivs inte ut, endast priset.
 
 **Varför:**
 För att `\r` flyttar markören till början av raden och skriver över `1. Mjölk` med `- 15 kr`. `Save()` skriver `\r\n` efter varje rad, men `Load()` klippte bara på `\n`, så `\r` blev kvar i slutet av varje namn. Därför hittade inte sökningen heller varorna.
@@ -34,7 +34,7 @@ mot `File.ReadAllLines(path)`, som klarar både `\n` och `\r\n`, så inget `\r` 
 2. **Fel totalsumma**
 
 **Vad hände:**
-Totalsumman stämmer inte. Den visar 121 kr i sället för 136 kr (15+32+89), mjölken räknades inte med.
+Totalsumman stämmer inte. Den visar 121 kr istället för 136 kr (15+32+89), mjölken räknades inte med.
 
 **Varför:** 
 Loopen i `Total()` hoppar över första varan. Listans första element har index 0, men loopen startade på `i = 1`, så `items[0]` kom aldrig med i summan. 
@@ -71,38 +71,37 @@ Om man valde "Ta bort vara" och valde ett nummer som inte fanns i listan så kra
 Om `items.txt` inte fanns så kraschade programmet direkt vid start med `FileNotFoundException`.
 
 **Varför:** 
-`File.ReadAllLines` antar att filen finns. Inget fångade undantaget, så programmet kraschade. Det händer innan någon vara har sparats och programmet körs första gången.
+`File.ReadAllLines` antar att filen finns. Inget fångade undantaget, så programmet kraschade. Det händer första gången programmet körs, innan något har sparats.
 
 **Lösning:** Jag valde att lägga `File.ReadAllLines` i en `try` och fångar `FileNotFoundException` i en `catch`. Då skrivs ett meddelande ut och `Load()` avslutas med `return;`, så programmet startar med en tom lista. Variabeln `lines` deklareras före `try`, eftersom den annars bara finns inuti `try`-blocket.
 
 6. **Fel vid sparande doldes**
 
 **Vad hände:**
-Även om sparandet misslyckades, t.ex. för att filen var skrivskyddad, så skrev programmet ut "Listan är sparad". Användaren trodde att listan är sparad, men varorna försvann vid omstart.
+Även om sparandet misslyckades, t.ex. för att filen var skrivskyddad, så skrev programmet ut "Listan är sparad". Användaren trodde att listan var sparad, men varorna försvann vid omstart.
 
 **Varför:** 
 `catch` i `Save()` var tom, så felet fångades och kastades bort utan att någon fick veta det. Dessutom låg "Listan är sparad." efter `try`/`catch` så den skrevs ut oavsett om det sparades eller inte. 
 
 **Lösning:**
-Jag flyttade "Listan är sparad." in i `try`, direkt efter `File.WriteAllText`. Den körs nu bara om sparandet lyckades. Den tomma `catch` ersattes med två specifika: `UnauthorizedAccessException` (saknar behörighet) och `IOException` (andra fel vid skrivning). Båda skriver ut ett meddelande om vad som            gick fel.
+Jag flyttade "Listan är sparad." in i `try`, direkt efter `File.WriteAllText`. Den körs nu bara om sparandet lyckades. Den tomma `catch` ersattes med två specifika: `UnauthorizedAccessException` (saknar behörighet) och `IOException` (andra fel vid skrivning). Båda skriver ut ett meddelande om vad som gick fel.
 
-## Designval. 
+## Designval
 
 ### Item vägrar ogiltiga värden
-Konstruktorn i `Item` kastar `ArgumentException` om namnet är tomt och `ArgumentOutOfRangeException` om priset är negativt. Då kan ett trasigt `Item` aldrig skapas. `Program.cs` fångar undantagen och skriver ut ett meddelande, så programmet fortsätter.
+Konstruktorn i `Item` kastar `ArgumentException` om namnet är tomt och `ArgumentOutOfRangeException` om priset är negativt. Då kan ett trasigt `Item` aldrig skapas. `Program.cs` fångar undantagen och skriver ut ett meddelande, så programmet fortsätter. Eftersom `Item` nu kastar undantag fångar även `Load()` dem. En ogiltig rad i `items.txt` hoppas över med ett meddelande istället för att krascha programmet vid start.
 
 ### Budgettaket
-Jag valde att låta `Add` returnera `false` när en vara skulle spräcka taket, i stället för att kasta ett undantag.
+Jag valde att låta `Add` returnera `false` när en vara skulle spräcka taket, istället för att kasta ett undantag.
 
 **Varför:** 
-Att listan når budgettaket är inget fel i programmet. Det är en helt normal situation. Undantntag passar bättre för sådant som inte borde hända, t.ex. att ett `Item` skapas med negativt pris. 
-Det är en helt normal situation, ungefär som när saldot inte räcker vid ett uttag i en bank.
+Att listan når budgettaket är inget fel i programmet. Det är en helt normal situation, ungefär som när saldot inte räcker vid ett uttag i en bank. Undantag passar bättre för sådant som inte borde hända, t.ex. att ett `Item` skapas med negativt pris.
 
 **Vad Program.cs gör med svaret:** 
 `Program.cs` kollar svaret med `if (!list.Add(...))` och skriver ut ett meddelande om varan inte lades till. Det är samma mönster som i `RemoveAt`, som också returnerar `false` när numret inte finns. `ShoppingList` svarar bara på om det gick, och `Program.cs` pratar med användaren.
 
 
-## Klassdiagram. 
+## Klassdiagram
 ```mermaid
 classDiagram
     class Program {
